@@ -7,7 +7,9 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.Reflection;
-
+using System.Net.Sockets;
+using System.Net;
+using System.Text.RegularExpressions;
 using RS_Module_for_Net35;
 using RS_Module_for_Net35.Communication;
 using RS_Module_for_Net35.Static;
@@ -21,7 +23,19 @@ namespace Module_Test_Form
         {
             InitializeComponent();
             
-            this.Text = this.Text + "(Build Date : " + DevUtility.GetBuildTime(Assembly.GetExecutingAssembly()).ToString() + ")";
+            this.Text = this.Text + "(Build Date : " + DevUtility.GetBuildTime(Assembly.GetExecutingAssembly()).ToString() + ")";  
+        }
+
+        private void TestForm_Load(object sender, EventArgs e)
+        {
+            comboBox_EPLC_PLCKind.Items.Add("XGT");
+            comboBox_EPLC_PLCKind.Items.Add("Melsec");
+            comboBox_EPLC_PLCKind.SelectedItem = "XGT";
+            
+            rsGridView_EPLC_CR.AddColumn("주소");
+            rsGridView_EPLC_CR.AddColumn("값");
+            
+            rsGridView_EPLC_CW.AddColumn("값");
         }
 
         #region RS232C_Scale
@@ -183,6 +197,82 @@ namespace Module_Test_Form
         private void button_EXGT_Send_Click(object sender, EventArgs e)
         {
             EXGT.PLC_Write_Independent(Ethernet_XGT_PLC.DataType.Word, textBox_EXGT_Adr.Text, textBox_EXGT_Data.Text);
+        }
+
+        Ethernet_Melsec_PLC EMEL = new Ethernet_Melsec_PLC();
+        
+        private void button_EPLC_Write_Click(object sender, EventArgs e)
+        {
+            string sIPAddress = textBox_EPLC_IP.Text;
+            int iPortNumber = Convert.ToInt32(numericUpDown_EPLC_Port.Value);
+            string sStartAdr = textBox_EPLC_CR_StAdr.Text;
+            int iReadCount = Convert.ToInt32(numericUpDown_EPLC_CR_Count.Value);
+
+            IPAddress IPAdr;
+            if (IPAddress.TryParse(sIPAddress, out IPAdr) == false)
+            {
+                MessageBox.Show("IP 주소 양식이 맞지 않습니다.");
+                return;
+            }
+
+            EMEL.PLC_IP_Address = sIPAddress;
+            EMEL.PLC_Port_Number = iPortNumber;
+            EMEL.SelectModule = Ethernet_Melsec_PLC.ModuleList.QJ71E71_100;
+
+            List<int> InData = new List<int>();
+            for (int i = 0; i < rsGridView_EPLC_CW.OriginGrid.RowCount - 1; i++)
+            {
+                InData.Add(int.Parse(rsGridView_EPLC_CW.GetText(i, "값")));
+            }
+
+            EMEL.PLC_Write_Continuity(sStartAdr, InData);
+        }
+
+        private void button_EPLC_Read_Click(object sender, EventArgs e)
+        {
+            switch (comboBox_EPLC_PLCKind.SelectedItem)
+            {
+                case "Melsec":
+                    string sIPAddress = textBox_EPLC_IP.Text;
+                    int iPortNumber = Convert.ToInt32(numericUpDown_EPLC_Port.Value);
+                    string sStartAdr = textBox_EPLC_CR_StAdr.Text;
+                    int iReadCount = Convert.ToInt32(numericUpDown_EPLC_CR_Count.Value);
+
+                    IPAddress IPAdr;
+                    if (IPAddress.TryParse(sIPAddress, out IPAdr) == false)
+                    {
+                        MessageBox.Show("IP 주소 양식이 맞지 않습니다.");
+                        return;
+                    }
+
+                    EMEL.PLC_IP_Address = sIPAddress;
+                    EMEL.PLC_Port_Number = iPortNumber;
+                    EMEL.SelectModule = Ethernet_Melsec_PLC.ModuleList.QJ71E71_100;
+
+                    List<int> ListData = EMEL.PLC_Read_Continuity(sStartAdr, iReadCount);
+
+                    int stAdr = int.Parse(Regex.Replace(sStartAdr, @"[\D]", ""));
+                    rsGridView_EPLC_CR.Clear();
+                    for (int i = 0; i < ListData.Count; i++)
+                    {
+                        rsGridView_EPLC_CR.AddRow();
+                        rsGridView_EPLC_CR.SetText(i, "주소", (stAdr + i).ToString());
+                        rsGridView_EPLC_CR.SetText(i, "값", ListData[i].ToString());
+                    }
+                    break;
+                case "XGT":
+                    break;
+            }
+        }
+
+        private void button_EPLC_CW_ADD_Click(object sender, EventArgs e)
+        {
+            rsGridView_EPLC_CW.AddRow();
+        }
+
+        private void button_EPLC_CW_DEL_Click(object sender, EventArgs e)
+        {
+            rsGridView_EPLC_CW.DeleteRow();
         }
     }
 }

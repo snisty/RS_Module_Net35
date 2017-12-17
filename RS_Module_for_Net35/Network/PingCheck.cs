@@ -57,7 +57,7 @@ namespace RS_Module_for_Net35.Network
 
             DirectoryCheck(FilePath);
 
-            string FullPath = FilePath + "PingCheck" + DateTime.Now.ToString("yyyyMMdd") + ".txt";
+            string FullPath = FilePath + FileName + DateTime.Now.ToString("yyyyMMdd") + ".txt";
             thNetCheck = new Thread(new ParameterizedThreadStart(fnNetCheck))
             {
                 IsBackground = true
@@ -96,7 +96,7 @@ namespace RS_Module_for_Net35.Network
                 Thread.Sleep(100);
                 try
                 {
-                    string LogMsg = DateTime.Now + '\t'.ToString();
+                    string LogMsg = HostIP + '\t' + DateTime.Now + '\t'.ToString();
                     PingReply prply = netMon.Send(HostIP);
                     if (prply.Status == IPStatus.Success)
                     {

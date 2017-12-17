@@ -15,7 +15,7 @@ namespace Module_Test_Form
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new TestProgram());
+            Application.Run(new TestForm());
         }
     }
 }

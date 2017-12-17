@@ -16,6 +16,14 @@ namespace RS_Module_for_Net35.Windows_Controls
             InitializeComponent();
         }
 
+        public DataGridView OriginGrid
+        {
+            get
+            {
+                return dataGridView_Main;
+            }
+        }
+
         DataTable BindData = new DataTable();
 
         /// <summary>
@@ -35,6 +43,17 @@ namespace RS_Module_for_Net35.Windows_Controls
         {
             BindData.Rows.Add();
             dataGridView_Main.DataSource = BindData;
+        }
+
+        public void DeleteRow()
+        {
+            try
+            {
+                BindData.Rows.RemoveAt(BindData.Rows.Count - 1);
+                dataGridView_Main.DataSource = BindData;
+            }
+            catch
+            { }
         }
 
         /// <summary>
@@ -59,7 +78,7 @@ namespace RS_Module_for_Net35.Windows_Controls
         /// </summary>
         public void Clear()
         {
-            BindData = new DataTable();
+            BindData.Rows.Clear();
             dataGridView_Main.DataSource = BindData;
         }
     }

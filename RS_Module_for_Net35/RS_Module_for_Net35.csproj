@@ -40,9 +40,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Communication\Ethernet_XGT_PLC.cs" />
+    <Compile Include="Network\Ethernet_Melsec_PLC.cs" />
+    <Compile Include="Network\Ethernet_XGT_PLC.cs" />
     <Compile Include="Communication\RS232C_Scale.cs" />
-    <Compile Include="Communication\RS232C_XGT_PLC.cs" />
+    <Compile Include="Network\RS232C_XGT_PLC.cs" />
+    <Compile Include="PLC\PLC_Enums.cs" />
     <Compile Include="Static\DevUtility.cs" />
     <Compile Include="Network\PingCheck.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

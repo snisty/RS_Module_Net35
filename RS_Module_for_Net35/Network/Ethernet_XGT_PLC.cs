@@ -19,7 +19,7 @@ namespace RS_Module_for_Net35.Communication
         /// 기본값 : 2004
         /// </summary>
         public int PLC_Port_Number = 2004;
-        
+
         /// <summary>
         /// 헤더 프레임을 가져옵니다.
         /// </summary>
@@ -52,7 +52,7 @@ namespace RS_Module_for_Net35.Communication
             HeaderFrame[17] = (byte)(CommandLenth >> 8);
 
             HeaderFrame[18] = 0x00; //0~3 bit = FEnet I/F 슬롯 번호, 4~7 = FEnet I/F 베이스 번호
-            
+
             for (int i = 0; i < 19; i++)  //헤더프레임의 Byte Sum
             {
                 if (i == 0)
@@ -73,6 +73,7 @@ namespace RS_Module_for_Net35.Communication
         /// Continuity는 Byte형만 가능합니다.
         /// </summary>
         public enum CommandType { Read, Write };
+
         /// <summary>
         /// CommandType에 따른 코드를 리턴
         /// </summary>
@@ -246,7 +247,7 @@ namespace RS_Module_for_Net35.Communication
             //전송할 프레임
             byte[] SendFrame = byteList.ToArray();
             ReadSocket.Send(SendFrame, 0, SendFrame.Length, 0);     //프레임 전송
-            byte[] ReceiveBuffer = new byte[1024];  //수신 버퍼
+            byte[] ReceiveBuffer = new byte[1024 + DataSize(DT) * sAdrs.Length];  //수신 버퍼
             int ReceiveLen = ReadSocket.Receive(ReceiveBuffer, ReceiveBuffer.Length, 0);    //데이터 수신
 
             List<int> ResultList = new List<int>();
@@ -273,7 +274,7 @@ namespace RS_Module_for_Net35.Communication
             List<byte> byteList = new List<byte>();
             //변수 바이트
             List<byte> VariableList = new List<byte>();
-            
+
             //변수길이 및 직접변수
             VariableList.Add(0x08);
             VariableList.Add(0x00);
@@ -344,7 +345,7 @@ namespace RS_Module_for_Net35.Communication
             //전송할 프레임
             byte[] SendFrame = byteList.ToArray();
             ReadSocket.Send(SendFrame, 0, SendFrame.Length, 0);     //프레임 전송
-            byte[] ReceiveBuffer = new byte[1024];  //수신 버퍼
+            byte[] ReceiveBuffer = new byte[1024 + DataSize(DT) * Count];  //수신 버퍼
             int ReceiveLen = ReadSocket.Receive(ReceiveBuffer, ReceiveBuffer.Length, 0);    //데이터 수신
 
             List<int> ResultList = new List<int>();
@@ -466,7 +467,7 @@ namespace RS_Module_for_Net35.Communication
             //전송할 프레임
             byte[] SendFrame = byteList.ToArray();
             ReadSocket.Send(SendFrame, 0, SendFrame.Length, 0);     //프레임 전송
-            byte[] ReceiveBuffer = new byte[1024];  //수신 버퍼
+            byte[] ReceiveBuffer = new byte[1024 + DataSize(DT) * sAdrs.Length];  //수신 버퍼
             int ReceiveLen = ReadSocket.Receive(ReceiveBuffer, ReceiveBuffer.Length, 0);    //데이터 수신
             ReadSocket.Close();
 
@@ -501,7 +502,7 @@ namespace RS_Module_for_Net35.Communication
             List<byte> byteList = new List<byte>();
             //변수 바이트
             List<byte> VariableList = new List<byte>();
-            
+
             string[] sData = Data.Split(new string[] { "_/" }, StringSplitOptions.None);    //데이터 목록
 
             //변수길이 및 직접변수
@@ -585,7 +586,7 @@ namespace RS_Module_for_Net35.Communication
             //전송할 프레임
             byte[] SendFrame = byteList.ToArray();
             ReadSocket.Send(SendFrame, 0, SendFrame.Length, 0);     //프레임 전송
-            byte[] ReceiveBuffer = new byte[1024];  //수신 버퍼
+            byte[] ReceiveBuffer = new byte[1024 + DataSize(DT) * sData.Length];  //수신 버퍼
             int ReceiveLen = ReadSocket.Receive(ReceiveBuffer, ReceiveBuffer.Length, 0);    //데이터 수신
             ReadSocket.Close();
 
